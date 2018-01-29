@@ -107,7 +107,7 @@ DockerOptArray+=( --name zanata
    -e ZANATA_MGMT=${ZANATA_MGMT_PORT} \
    --net ${ZANATA_DOCKER_NETWORK} \
    -p ${ZANATA_PORT}:8080 \
-   -p ${ZANATA_DEBUG_PORT}:8787 \
+   -p 127.0.0.1:${ZANATA_DEBUG_PORT}:8787 \
    -v zanata-files:/var/lib/zanata:Z \
    )
 
@@ -119,4 +119,4 @@ else
     DockerOptArray+=( --rm  -it )
 fi
 
-docker run ${DockerOptArray[@]} zanata/server:$ZanataVer
+docker run ${DockerOptArray[@]} framasoft/zanata:$ZanataVer

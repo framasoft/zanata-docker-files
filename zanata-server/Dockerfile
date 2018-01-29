@@ -5,7 +5,7 @@ EXPOSE 8080
 # Version should be assigned in build time
 # Take care editing the ZANATA_VERSION line: just version numbers,
 # otherwise runapp.sh cannot parse it.
-ARG ZANATA_VERSION=4.4.0-alpha-2
+ARG ZANATA_VERSION=4.3.3
 ARG MYSQL_CONNECTOR_JAVA_VERSION=5.1.26
 
 # MAIL_USERNAME and MAIL_PASSWORD can not be empty as they are used in wildfly standalone-full.xml.
@@ -18,6 +18,10 @@ LABEL Name="zanata-platform"\
     Release="1"
 
 USER root
+
+RUN yum -y install postfix
+RUN sed -i -e "s@^inet_protocols.*@inet_protocols = ipv4@" /etc/postfix/main.cf
+RUN systemctl enable postfix
 
 ENV ZANATA_HOME /var/lib/zanata
 RUN mkdir -p $ZANATA_HOME && chown -R jboss.jboss $ZANATA_HOME
@@ -39,3 +43,10 @@ RUN curl -L -o /opt/jboss/wildfly/standalone/deployments/zanata.war \
     && chmod o+rw /opt/jboss/wildfly/standalone/deployments/zanata.war
 
 ADD conf/standalone.xml /opt/jboss/wildfly/standalone/configuration/
+#ADD zanata-war-4.4.0-alpha-1.frama.war /opt/jboss/wildfly/standalone/deployments/zanata.war
+
+USER root
+
+#RUN chmod o+rw /opt/jboss/wildfly/standalone/deployments/zanata.war
+ADD conf/run.sh /opt/
+CMD ["/opt/run.sh"]
